@@ -81,4 +81,4 @@ const { sendTransaction } = require('./utils/contractInteraction');
 const tx = await sendTransaction(contract, 'myMethod', [arg1, arg2]);
 ```
 
-For more detailed examples and use cases, refer to the [Examples](docs/Examples.md) documentation.
+For more detailed examples and use cases, refer to the [Examples dapp](example) documentation.

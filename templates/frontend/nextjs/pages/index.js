@@ -2,26 +2,26 @@ import Head from 'next/head'
 import WalletConnection from '../components/WalletConnection'
 
 export default function Home() {
-    return (
-        <div className="container">
-            <Head>
-                <title>Selendra dApp</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+  return (
+    <div className="container">
+      <Head>
+        <title>Selendra dApp</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-            <main>
-                <h1 className="title">
-                    Welcome to your Selendra dApp
-                </h1>
+      <main>
+        <h1 className="title">
+          Welcome to Selendra dApp
+        </h1>
 
-                <p className="description">
-                    Get started by connecting your wallet
-                </p>
+        <p className="description">
+          Get started by connecting your wallet
+        </p>
 
-                <WalletConnection />
-            </main>
+        <WalletConnection />
+      </main>
 
-            <style jsx>{`
+      <style jsx>{`
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -53,6 +53,6 @@ export default function Home() {
           font-size: 1.5rem;
         }
       `}</style>
-        </div>
-    )
+    </div>
+  )
 }

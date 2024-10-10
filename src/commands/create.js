@@ -88,6 +88,9 @@ async function create(projectName) {
     console.log(chalk.yellow('3. npx hardhat compile'));
     console.log(chalk.yellow('4. npx hardhat run scripts/deploy.js --network selendra'));
     console.log(chalk.yellow(`5. cd frontend && npm run dev`));
+    console.log(chalk.green(`\n Modify your contract file/name in 'contracts' directory and deploy.js in 'scripts' directory`));
+
+    console.log(chalk.green(`\n For security, check if .gitignore exist, if not do so and add **/*.env`));
 }
 
 module.exports = create;
