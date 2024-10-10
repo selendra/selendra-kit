@@ -1,23 +1,31 @@
 {
-  "name": "selendra",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "ethers": "^6.13.3",
-    "inquirer": "^12.0.0",
-    "next": "^14.2.14",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.13"
-  },
+  "name": "selendra-sdk",
+  "version": "0.1.0",
+  "description": "SDK for building on Selendra Network",
+  "main": "src/index.js",
+  "type": "commonjs",
   "bin": {
-    "selendra-app": "bin/create-selendra-app.js"
+    "selendra": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "selendra",
+    "blockchain",
+    "sdk"
+  ],
+  "author": "Selendra Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.3.0",
+    "ethers": "^6.13.3",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^12.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.5",
+    "jest": "^27.4.5"
   }
 }
