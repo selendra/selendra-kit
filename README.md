@@ -111,7 +111,7 @@ For detailed usage of these utilities, refer to the [API Documentation](docs/API
 
 ## Contributing
 
-We welcome contributions to SelendraSDK! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
+We welcome contributions to SelendraSDK! Please see our [Contributing Guide](contribute.md) for more details.
 
 ## License
 
