@@ -1,86 +1,91 @@
-import { useState, useEffect } from 'react'
-import { ethers } from 'ethers'
-
-const SELENDRA_CHAIN_IDS = {
-    1961: 'Selendra Mainnet',
-    1953: 'Selendra Testnet'
-}
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import { useContract } from '../hooks/useContract';
 
 export default function WalletConnection() {
-    const [account, setAccount] = useState(null)
-    const [network, setNetwork] = useState(null)
-    const [selBalance, setSelBalance] = useState(null)
-    const [provider, setProvider] = useState(null)
+    const [account, setAccount] = useState(null);
+    const [network, setNetwork] = useState(null);
+    const [provider, setProvider] = useState(null);
+    const [balance, setBalance] = useState(null);
+    const { contract, contractError } = useContract(provider);
 
     useEffect(() => {
         if (typeof window.ethereum !== 'undefined') {
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-            setProvider(web3Provider)
-            window.ethereum.on('accountsChanged', handleAccountsChanged)
-            window.ethereum.on('chainChanged', handleChainChanged)
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            setProvider(provider);
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+            window.ethereum.on('chainChanged', handleChainChanged);
         }
 
         return () => {
             if (typeof window.ethereum !== 'undefined') {
-                window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
-                window.ethereum.removeListener('chainChanged', handleChainChanged)
+                window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                window.ethereum.removeListener('chainChanged', handleChainChanged);
             }
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
-        if (account && provider) {
-            fetchSelBalance()
+        if (account && contract) {
+            updateBalance();
         }
-    }, [account, provider, network])
+    }, [account, contract]);
 
     function handleAccountsChanged(accounts) {
         if (accounts.length > 0) {
-            setAccount(accounts[0])
+            setAccount(accounts[0]);
         } else {
-            setAccount(null)
-            setSelBalance(null)
+            setAccount(null);
         }
     }
 
     function handleChainChanged(chainId) {
-        const networkId = parseInt(chainId, 16)
-        setNetwork(networkId)
-        setSelBalance(null)
-        fetchSelBalance()
+        setNetwork(parseInt(chainId, 16));
     }
 
     async function connectWallet() {
         if (typeof window.ethereum !== 'undefined') {
             try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' })
-                const accounts = await provider.listAccounts()
-                setAccount(accounts[0])
-                const network = await provider.getNetwork()
-                setNetwork(network.chainId)
-                await fetchSelBalance()
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                const address = await signer.getAddress();
+                const network = await provider.getNetwork();
+                setAccount(address);
+                setNetwork(network.chainId);
+                setProvider(provider);
             } catch (error) {
-                console.error('Failed to connect wallet:', error)
+                console.error('Failed to connect wallet:', error);
             }
         } else {
-            console.log('Please install MetaMask!')
+            console.log('Please install MetaMask!');
         }
     }
 
-    async function fetchSelBalance() {
-        if (!account || !provider) return
-
-        try {
-            const balance = await provider.getBalance(account)
-            setSelBalance(ethers.utils.formatEther(balance))
-        } catch (error) {
-            console.error('Failed to fetch SEL balance:', error)
-            setSelBalance(null)
+    async function updateBalance() {
+        if (contract && account) {
+            try {
+                const balance = await contract.balanceOf(account);
+                setBalance(ethers.utils.formatEther(balance));
+            } catch (error) {
+                console.error('Failed to fetch balance:', error);
+            }
         }
     }
 
-    function getNetworkName(chainId) {
-        return SELENDRA_CHAIN_IDS[chainId] || `Unknown Network (${chainId})`
+    async function mintTokens() {
+        if (contract && account) {
+            try {
+                const signer = provider.getSigner();
+                const connectedContract = contract.connect(signer);
+                const tx = await connectedContract.mint(account, ethers.utils.parseEther("100"));
+                await tx.wait();
+                updateBalance();
+            } catch (error) {
+                console.error('Failed to mint tokens:', error);
+            }
+        }
     }
 
     return (
@@ -88,12 +93,14 @@ export default function WalletConnection() {
             {account ? (
                 <div>
                     <p>Connected Account: {account}</p>
-                    <p>Network: {getNetworkName(network)}</p>
-                    <p>SEL Balance: {selBalance !== null ? `${selBalance} SEL` : 'Fetching...(slow on localhost)'}</p>
+                    <p>Network ID: {network}</p>
+                    <p>Token Balance: {balance}</p>
+                    <button onClick={mintTokens}>Mint 100 Tokens</button>
                 </div>
             ) : (
                 <button onClick={connectWallet}>Connect Wallet</button>
             )}
+            {contractError && <p>Error loading contract: {contractError.message}</p>}
         </div>
-    )
+    );
 }

@@ -10,12 +10,9 @@ program
 program
     .command('create <project-name>')
     .description('Create a new Selendra project')
-    .action(async (projectName) => {
-        try {
-            await create(projectName);
-        } catch (error) {
-            console.error('An error occurred:', error);
-        }
+    .option('-t, --template <template>', 'Choose a template (nextjs or vite)', 'nextjs')
+    .action((projectName, options) => {
+        create(projectName, options);
     });
 
 program.parse(process.argv);

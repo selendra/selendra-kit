@@ -1,96 +1,102 @@
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
-const inquirer = import('inquirer');
 const { execSync } = require('child_process');
 
-async function create(projectName) {
+async function create(projectName, options) {
     console.log(chalk.blue(`Creating a new Selendra project: ${projectName}`));
 
     const templatePath = path.join(__dirname, '..', '..', 'templates');
     const projectPath = path.join(process.cwd(), projectName);
 
-    // Ensure the project directory doesn't already exist
-    if (fs.existsSync(projectPath)) {
-        console.error(chalk.red(`Error: Directory ${projectName} already exists.`));
+    // Set default template to 'nextjs' if not provided
+    const template = options.template || 'nextjs';
+
+    try {
+        // Ensure the project directory doesn't already exist
+        if (fs.existsSync(projectPath)) {
+            console.error(chalk.red(`Error: Directory ${projectName} already exists.`));
+            process.exit(1);
+        }
+
+        // Copy Hardhat template
+        await fs.copy(path.join(templatePath, 'hardhat'), projectPath);
+
+        // Copy frontend template
+        const frontendPath = path.join(templatePath, 'frontend', template);
+        const projectFrontendPath = path.join(projectPath, 'frontend');
+        await fs.copy(frontendPath, projectFrontendPath);
+
+        // Define the CSS content
+        const cssContent = `
+    html, body {
+      padding: 0;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+        Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    `.trim();
+
+        // Handle CSS for both Next.js and Vite
+        if (template === 'nextjs') {
+            const stylesPath = path.join(projectFrontendPath, 'styles');
+            await fs.ensureDir(stylesPath);
+            await fs.writeFile(path.join(stylesPath, 'globals.css'), cssContent);
+        } else if (template === 'vite') {
+            await fs.writeFile(path.join(projectFrontendPath, 'src', 'index.css'), cssContent);
+        }
+
+        // Copy the new SampleAssetToken.sol contract
+        const contractsDir = path.join(projectPath, 'contracts');
+        await fs.ensureDir(contractsDir);
+        await fs.copyFile(
+            path.join(__dirname, '..', '..', 'templates', 'contracts', 'SampleAssetToken.sol'),
+            path.join(contractsDir, 'SampleAssetToken.sol')
+        );
+
+        // Copy utility files
+        const utilsPath = path.join(__dirname, '..', 'utils');
+        await fs.copy(utilsPath, path.join(projectPath, 'utils'));
+
+        // Copy utility functions and hooks
+        const utilsDir = path.join(projectFrontendPath, 'src', 'utils');
+        const hooksDir = path.join(projectFrontendPath, 'src', 'hooks');
+        await fs.ensureDir(utilsDir);
+        await fs.ensureDir(hooksDir);
+        await fs.copyFile(
+            path.join(__dirname, '..', '..', 'templates', 'frontend', 'utils', 'contractUtils.js'),
+            path.join(utilsDir, 'contractUtils.js')
+        );
+        await fs.copyFile(
+            path.join(__dirname, '..', '..', 'templates', 'frontend', 'hooks', 'useContract.js'),
+            path.join(hooksDir, 'useContract.js')
+        );
+
+        // Install dependencies including OpenZeppelin
+        console.log(chalk.yellow('Installing dependencies...'));
+        execSync('npm install', { cwd: projectPath, stdio: 'inherit' });
+        execSync('npm install @openzeppelin/contracts', { cwd: projectPath, stdio: 'inherit' });
+
+        console.log(chalk.green(`Project ${projectName} created successfully!`));
+        console.log(chalk.yellow('Next steps:'));
+        console.log(chalk.yellow(`1. cd ${projectName}`));
+        console.log(chalk.yellow('2. Update .env file with your private key'));
+        console.log(chalk.yellow('3. npx hardhat compile'));
+        console.log(chalk.yellow('4. npx hardhat run scripts/deploy.js --network selendra'));
+        console.log(chalk.yellow('5. cd frontend && npm install && npm run dev'));
+    } catch (error) {
+        console.error(chalk.red('An error occurred:'), error);
         process.exit(1);
     }
-
-    // Import inquirer dynamically
-    const { default: inquirerModule } = await inquirer;
-
-    // Prompt for frontend framework choice
-    const { framework } = await inquirerModule.prompt([
-        {
-            type: 'list',
-            name: 'framework',
-            message: 'Choose a frontend framework:',
-            choices: ['nextjs', 'vite'],
-            default: 'nextjs',
-        },
-    ]);
-
-    // Copy Hardhat template
-    await fs.copy(path.join(templatePath, 'hardhat'), projectPath);
-
-    // Copy frontend template based on user choice
-    const frontendPath = path.join(templatePath, 'frontend', framework);
-    await fs.copy(frontendPath, path.join(projectPath, 'frontend'));
-
-    // Ensure CSS file exists and copy Selendra image for both frameworks
-    if (framework === 'vite') {
-        const indexCssPath = path.join(projectPath, 'frontend', 'src', 'index.css');
-        if (!fs.existsSync(indexCssPath)) {
-            fs.writeFileSync(indexCssPath, '/* Add your global styles here */');
-        }
-        // Ensure sel.svg exists in public directory
-        const selSvgPath = path.join(projectPath, 'frontend', 'public', 'sel.svg');
-        if (!fs.existsSync(selSvgPath)) {
-            fs.copyFileSync(path.join(templatePath, 'sel.svg'), selSvgPath);
-        }
-    } else if (framework === 'nextjs') {
-        const globalCssPath = path.join(projectPath, 'frontend', 'styles', 'globals.css');
-        if (!fs.existsSync(globalCssPath)) {
-            fs.writeFileSync(globalCssPath, '/* Add your global styles here */');
-        }
-        // Ensure sel.svg exists in public directory
-        const selSvgPath = path.join(projectPath, 'frontend', 'public', 'sel.svg');
-        if (!fs.existsSync(selSvgPath)) {
-            fs.copyFileSync(path.join(templatePath, 'sel.svg'), selSvgPath);
-        }
-    }
-
-    // Copy utility files
-    const utilsPath = path.join(__dirname, '..', 'utils');
-    await fs.copy(utilsPath, path.join(projectPath, 'utils'));
-
-    // Install dependencies
-    console.log(chalk.yellow('Installing dependencies...'));
-    process.chdir(projectPath);
-
-    // Install Hardhat and related dependencies
-    execSync('npm init -y', { stdio: 'inherit' });
-    execSync('npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox dotenv', { stdio: 'inherit' });
-
-    // Create a .env file
-    fs.writeFileSync('.env', 'SELENDRA_PRIVATE_KEY=your_private_key_here\n');
-
-    // Install frontend dependencies
-    console.log(chalk.yellow('Installing frontend dependencies...'));
-    process.chdir('frontend');
-    execSync('npm install', { stdio: 'inherit' });
-    process.chdir('..');
-
-    console.log(chalk.green(`Project ${projectName} created successfully with ${framework} frontend!`));
-    console.log(chalk.yellow('Next steps:'));
-    console.log(chalk.yellow(`1. cd ${projectName}`));
-    console.log(chalk.yellow('2. Update .env file with your private key'));
-    console.log(chalk.yellow('3. npx hardhat compile'));
-    console.log(chalk.yellow('4. npx hardhat run scripts/deploy.js --network selendra'));
-    console.log(chalk.yellow(`5. cd frontend && npm run dev`));
-    console.log(chalk.green(`\n Modify your contract file/name in 'contracts' directory and deploy.js in 'scripts' directory`));
-
-    console.log(chalk.green(`\n For security, check if .gitignore exist, if not do so and add **/*.env`));
 }
 
 module.exports = create;
