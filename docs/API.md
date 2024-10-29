@@ -1,4 +1,4 @@
-# SelendraSDK API Documentation
+# Selendrakit API Documentation
 
 ## Configuration Utilities
 
@@ -81,4 +81,4 @@ const { sendTransaction } = require('./utils/contractInteraction');
 const tx = await sendTransaction(contract, 'myMethod', [arg1, arg2]);
 ```
 
-For more detailed examples and use cases, refer to the [Examples dapp](https://github.com/selendra/selendra-sdk/tree/main/example) documentation.
+For more detailed examples and use cases, refer to the [Examples dapp](https://github.com/selendra/selendra-kit/tree/main/example) documentation.

@@ -1,7 +1,7 @@
 {
-  "name": "selendra-sdk",
+  "name": "selendra-kit",
   "version": "0.1.1",
-  "description": "SDK for building on Selendra Network",
+  "description": "kit for building on Selendra Network",
   "main": "index.js",
   "type": "commonjs",
   "bin": {
@@ -13,7 +13,7 @@
   "keywords": [
     "selendra",
     "blockchain",
-    "sdk"
+    "kit"
   ],
   "author": "Selendra Team",
   "license": "MIT",

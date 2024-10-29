@@ -12,10 +12,10 @@ SelendraKit is a toolkit for building decentralized applications (dApps) on the 
 
 ## Installation
 
-To install SelendraSDK globally, run:
+To install Selendrakit globally, run:
 
 ```bash
-npm install -g selendra-sdk
+npm install -g selendra-kit
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ This will create a new directory with a basic project structure, including Hardh
 
 ### Project Structure
 
-A typical project created with SelendraSDK will have the following structure:
+A typical project created with Selendrakit will have the following structure:
 
 ```
 my-selendra-app/
@@ -98,7 +98,7 @@ my-selendra-app/
 
 ## Selendra Utilities
 
-SelendraSDK provides utility functions to interact with the Selendra Network:
+Selendrakit provides utility functions to interact with the Selendra Network:
 
 - `getSelendraProvider(network)`: Get a provider for Selendra Network
 - `getSelendraWallet(privateKey, network)`: Get a wallet instance for Selendra Network
@@ -111,8 +111,8 @@ For detailed usage of these utilities, refer to the [API Documentation](docs/API
 
 ## Contributing
 
-We welcome contributions to SelendraSDK! Please see our [Contributing Guide](contribute.md) for more details.
+We welcome contributions to Selendrakit! Please see our [Contributing Guide](contribute.md) for more details.
 
 ## License
 
-SelendraSDK is released under the MIT License.
+Selendrakit is released under the MIT License.

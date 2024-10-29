@@ -5,7 +5,7 @@ const create = require('../src/commands/create');
 
 program
     .version('0.1.0')
-    .description('SelendraSDK - A powerful tool for building on Selendra Network');
+    .description('Selendrakit - A powerful tool for building on Selendra Network');
 
 program
     .command('create <project-name>')

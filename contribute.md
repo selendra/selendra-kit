@@ -1,6 +1,6 @@
-# Contributing to SelendraSDK
+# Contributing to Selendrakit
 
-We're excited that you're interested in contributing to SelendraSDK! This document outlines the process for contributing to this project.
+We're excited that you're interested in contributing to Selendrakit! This document outlines the process for contributing to this project.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ We're excited that you're interested in contributing to SelendraSDK! This docume
 ## Submitting Changes
 
 1. Push your changes to your fork on GitHub.
-2. Submit a pull request to the main SelendraSDK repository.
+2. Submit a pull request to the main Selendrakit repository.
 3. Describe your changes in detail in the pull request description.
 
 ## Code Style
@@ -38,4 +38,4 @@ If you find a bug or have a suggestion for improvement:
 
 If you have any questions about contributing, feel free to ask in the GitHub issues.
 
-Thank you for contributing to SelendraSDK!
+Thank you for contributing to Selendrakit!
