@@ -1,6 +1,6 @@
-# SelendraSDK
+# SelendraKit
 
-SelendraSDK is a toolkit for building decentralized applications (dApps) on the Selendra Network. It provides a set of utilities and templates to streamline the development process and make it easier to interact with the Selendra blockchain.
+SelendraKit is a toolkit for building decentralized applications (dApps) on the Selendra Network. It provides a set of utilities and templates to streamline the development process and make it easier to interact with the Selendra blockchain.
 
 ## Features
 
